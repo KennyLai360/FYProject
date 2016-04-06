@@ -57,7 +57,8 @@ public class PlayerController : MonoBehaviour {
 		//Fixed at those points and rotate at the Z axis
 		//When the velocity of the object is moving in the Z axis
 		//PlayerTilt is the mutlipler of how much it will tilt by.
-		rb.rotation = Quaternion.Euler(0.0f, 90.0f, rb.velocity.z * playerTilt);
-		
+		rb.rotation = Quaternion.Euler(0.0f, 90f, rb.velocity.z * playerTilt);
 	}
+	
+
 }

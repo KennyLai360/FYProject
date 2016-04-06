@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 
@@ -11,9 +13,28 @@ public class GameController : MonoBehaviour {
 	public float spawnWait;
 	public float timeForNextWave;
 	
+	private int score;
+	public Text scoreText;
+	public Text GameOverText;
+	public Text retryText;
+	
+	private bool gameOver;
+	private bool restart;
+	
 	// Use this for initialization
 	void Start () {
+		gameOver = false;
+		restart = false;
+		GameOverText.enabled = false;
+		retryText.enabled = false;
+		score = 0;
 		StartCoroutine (SpawnWaves());
+	}
+	
+	void Update() {
+		if (Input.GetKeyDown(KeyCode.R)) {
+			RestartCurrentScene();
+		}
 	}
 	
 	IEnumerator SpawnWaves() {
@@ -28,7 +49,35 @@ public class GameController : MonoBehaviour {
 				yield return new WaitForSeconds(spawnWait);
 			}
 			yield return new WaitForSeconds(timeForNextWave);
+			
+			if (gameOver) {
+				retryText.enabled = true;
+				restart = true;
+				break;
+			}
 		}
 	}
+	
+	//Public method that can be called anywhere as long as it's found this game controller.
+	public void AddScore(int newScoreValue) {
+		score += newScoreValue;
+		UpdateScore();
+	}
+	
+	//Update the GUI text with the new score.
+	void UpdateScore() {
+		scoreText.text = "Score " + score;
+	}
+	
+	public void GameOver() {
+		gameOver = true;
+		GameOverText.enabled = true;
+	}
+	
+	void RestartCurrentScene() {
+		SceneManager.LoadScene(0);
+	}
+	
+	
 	
 }

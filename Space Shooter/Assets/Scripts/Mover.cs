@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+* Generic moving script for moving any object within the game, moving forwards and backwards(apply negative values).
+*/
+
 public class Mover : MonoBehaviour {
 	
 	private Rigidbody rb;

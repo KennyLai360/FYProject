@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//Moved the restriction values to another class so it's neater in the actual game editor.
 [System.Serializable]
 public class Boundary {
 	public float xMin, xMax, zMin, zMax;
@@ -9,20 +10,25 @@ public class Boundary {
 
 public class PlayerController : MonoBehaviour {
 	
+	public Boundary boundary;
+	
 	private Rigidbody rb;
 	public float movementFactor;
-	public Boundary boundary;
 	public float playerTilt;
 
 	void FixedUpdate() {
+		
+		//Grab the keyboard inputs to move horizontal and vertical.
 		float moveHorizontal = Input.GetAxis("Horizontal");
 		float moveVertical = Input.GetAxis("Vertical");
 		
 		rb = GetComponent<Rigidbody>();
 		
+		//Apply the movement values(0 - 1) and apply some velocity to the rigit body.
 		Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
 		rb.velocity = movement * movementFactor;
 		
+		//Clamp the range of values in the X,Y and Z axis of where the player can move on the screen.
 		rb.position = new Vector3(
 			Mathf.Clamp(rb.position.x, boundary.xMin, boundary.xMax),
 			0.0f,

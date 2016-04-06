@@ -21,12 +21,16 @@ public class PlayerController : MonoBehaviour {
 	public float fireRate;
 	private float nextFire;
 	
+	private AudioSource au;
+	
 	//Update called right before every frame within the game is loaded.
 	void Update() {
 		if (Input.GetButton("Fire1") && Time.time > nextFire) {
+			au = GetComponent<AudioSource>();
 			nextFire = Time.time + fireRate;
 			//Creates an object of the projectile, with the position and rotation of the projectileSpawn.
 			Instantiate(projectile, projectileSpawn.position, projectileSpawn.rotation);
+			au.Play();
 		}
 	}
 

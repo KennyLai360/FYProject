@@ -15,6 +15,20 @@ public class PlayerController : MonoBehaviour {
 	private Rigidbody rb;
 	public float movementFactor;
 	public float playerTilt;
+	
+	public GameObject projectile;
+	public Transform projectileSpawn;
+	public float fireRate;
+	private float nextFire;
+	
+	//Update called right before every frame within the game is loaded.
+	void Update() {
+		if (Input.GetButton("Fire1") && Time.time > nextFire) {
+			nextFire = Time.time + fireRate;
+			//Creates an object of the projectile, with the position and rotation of the projectileSpawn.
+			Instantiate(projectile, projectileSpawn.position, projectileSpawn.rotation);
+		}
+	}
 
 	void FixedUpdate() {
 		

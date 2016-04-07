@@ -69,7 +69,10 @@ public class GameController : MonoBehaviour {
 				yield return new WaitForSeconds(spawnWait);
 			}
 			yield return new WaitForSeconds(timeForNextWave);
-			
+			hazardCount += 5;
+			if (Time.time > 20f) {
+				spawnWait = 0.3f;
+			}
 			if (gameOver) {
 				retryText.enabled = true;
 				restart = true;

@@ -58,6 +58,10 @@ public class PlayerController : MonoBehaviour {
 		//When the velocity of the object is moving in the Z axis
 		//PlayerTilt is the mutlipler of how much it will tilt by.
 		rb.rotation = Quaternion.Euler(0.0f, 90f, rb.velocity.z * playerTilt);
+		
+		if (Time.time > 20f) {
+			fireRate = 0.1f;
+		}
 	}
 	
 

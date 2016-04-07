@@ -19,15 +19,15 @@ public class DestroyByContact : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other) {
+		
 		if (other.tag == "Boundary" || other.tag == "Enemy") {
 			return;
 		};
 		
-		if (explosion != null) {
-			Instantiate(explosion,transform.position, transform.rotation);
-		}
+		Debug.Log(other.tag);
 		
 		
+			
 		//If the contact is with the object with the Player tag, then it will instantiate a playerExplosion
 		//at the same spot where the collision happened.
 		if (other.tag == "Player") {
@@ -36,8 +36,20 @@ public class DestroyByContact : MonoBehaviour {
 		}
 		
 		gameController.AddScore(scoreValue);
-		Destroy(other.gameObject);
-		Destroy(gameObject);
+		
+		//This applies to the Enemy projectiles.
+		if (explosion != null) {
+			//if not explosion is not null meaning it's an asteroid or enemy, then instantiate the explosion.
+			Instantiate(explosion,transform.position, transform.rotation);
+			Destroy(other.gameObject);
+			Destroy(gameObject);
+		} else if (other.tag == "Player") {
+			//Else if explosion is null and it hits the player tag then destroy it.
+			Destroy(other.gameObject);
+			Destroy(gameObject);
+		}
+		
+		
 		
 	}
 }

@@ -18,9 +18,8 @@ public class EnemyEvasiveManeuver : MonoBehaviour
 
     void Start ()
     {
-        rb = GetComponent <Rigidbody> ();
-        currentSpeed = rb.velocity.x;
-		Debug.Log(currentSpeed);
+        rb = GetComponent <Rigidbody>();
+        //currentSpeed = rb.velocity.x;
         StartCoroutine (Evade ());
     }
 

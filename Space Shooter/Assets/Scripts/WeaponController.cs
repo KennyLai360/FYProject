@@ -10,10 +10,10 @@ public class WeaponController : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		InvokeRepeating("Fire", enemyDelay, enemyFireRate);
+		InvokeRepeating("enemyFire", enemyDelay, enemyFireRate);
 	}
 	
-	void Fire() {
+	void enemyFire() {
 		Instantiate(enemyProjectile, enemyShotSpawn.position, enemyShotSpawn.rotation);
 	}
 }

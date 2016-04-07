@@ -22,11 +22,7 @@ public class DestroyByContact : MonoBehaviour {
 		
 		if (other.tag == "Boundary" || other.tag == "Enemy") {
 			return;
-		};
-		
-		Debug.Log(other.tag);
-		
-		
+		};	
 			
 		//If the contact is with the object with the Player tag, then it will instantiate a playerExplosion
 		//at the same spot where the collision happened.
@@ -34,8 +30,6 @@ public class DestroyByContact : MonoBehaviour {
 		Instantiate(playerExplosion, other.transform.position, other.transform.rotation);
 		gameController.GameOver();
 		}
-		
-		gameController.AddScore(scoreValue);
 		
 		//This applies to the Enemy projectiles.
 		if (explosion != null) {
@@ -49,7 +43,7 @@ public class DestroyByContact : MonoBehaviour {
 			Destroy(gameObject);
 		}
 		
-		
+		gameController.AddScore(scoreValue);
 		
 	}
 }

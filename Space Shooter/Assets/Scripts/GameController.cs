@@ -21,6 +21,8 @@ public class GameController : MonoBehaviour {
 	private bool gameOver;
 	private bool restart;
 	
+	public GameObject pausePanel;
+	
 	// Use this for initialization
 	void Start () {
 		gameOver = false;
@@ -32,10 +34,27 @@ public class GameController : MonoBehaviour {
 	}
 	
 	void Update() {
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			if (gameOver == false) {
+			Time.timeScale = 0;
+			pausePanel.SetActive(true);
+			}
+		}
 		if (Input.GetKeyDown(KeyCode.R) && restart == true) {
 			RestartCurrentScene();
 		}
 	}
+
+	public void CloseOptionPanel() {
+		pausePanel.SetActive(false);
+		Time.timeScale = 1;
+	}
+	
+	public void QuitGame() {
+		Debug.Log("Game terminated.");
+		Application.Quit();
+	}
+
 	
 	IEnumerator SpawnWaves() {
 		//Wait for X amount of seconds before spawning the enemy wave so the player can prepare.

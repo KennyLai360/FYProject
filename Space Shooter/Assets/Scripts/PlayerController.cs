@@ -22,15 +22,27 @@ public class PlayerController : MonoBehaviour {
 	private float nextFire;
 	
 	private AudioSource au;
+	private GameController gameController;
+	
+	void Start() {
+		GameObject gameControllerObject = GameObject.FindWithTag("GameController");
+		if (gameControllerObject != null) {
+			gameController = gameControllerObject.GetComponent<GameController>();
+		} else {
+			Debug.Log("ERROR: GAME CONTROLLER NOT FOUND.");
+		}
+	}
 	
 	//Update called right before every frame within the game is loaded.
 	void Update() {
-		if (Input.GetButton("Fire1") && Time.time > nextFire) {
-			au = GetComponent<AudioSource>();
-			nextFire = Time.time + fireRate;
-			//Creates an object of the projectile, with the position and rotation of the projectileSpawn.
-			Instantiate(projectile, projectileSpawn.position, projectileSpawn.rotation);
-			au.Play();
+		if (!gameController.IsGamePaused()) {
+			if (Input.GetButton("Fire1") && Time.time > nextFire) {
+				au = GetComponent<AudioSource>();
+				nextFire = Time.time + fireRate;
+				//Creates an object of the projectile, with the position and rotation of the projectileSpawn.
+				Instantiate(projectile, projectileSpawn.position, projectileSpawn.rotation);
+				au.Play();
+			}
 		}
 	}
 
@@ -59,9 +71,9 @@ public class PlayerController : MonoBehaviour {
 		//PlayerTilt is the mutlipler of how much it will tilt by.
 		rb.rotation = Quaternion.Euler(0.0f, 90f, rb.velocity.z * playerTilt);
 		
-		if (Time.time > 20f) {
+		/*if (Time.time > 20f) {
 			fireRate = 0.1f;
-		}
+		}*/
 	}
 	
 

@@ -20,34 +20,69 @@ public class GameController : MonoBehaviour {
 	
 	private bool gameOver;
 	private bool restart;
+	private bool gamePaused;
 	
 	public GameObject pausePanel;
+	public GameObject volumeSlider;
 	
 	// Use this for initialization
 	void Start () {
+		Slider slider = volumeSlider.GetComponent<Slider>();
+		
+		gamePaused = false;
 		gameOver = false;
 		restart = false;
 		GameOverText.enabled = false;
 		retryText.enabled = false;
 		score = 0;
+		
+		slider.value = AudioListener.volume;
+		
 		StartCoroutine (SpawnWaves());
 	}
 	
+	//Used by the playerController to see if the game is paused or not to whether allow the game to 
+	//execute the fire method for the player.
+	public bool IsGamePaused() {
+		if (gamePaused) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	void Update() {
+		//As soon as timeScale is set to zero FixedUpdate will not execute.
+		if (Time.timeScale == 0) {
+			gamePaused = true;
+		} else {
+			gamePaused = false;
+		}
+		
+		//Gives an option to the palyer to close the Pause menu by pressing the same ESC key.		
 		if (Input.GetKeyDown(KeyCode.Escape)) {
-			if (gameOver == false) {
-			Time.timeScale = 0;
-			pausePanel.SetActive(true);
+			if (pausePanel.activeSelf == false) {	
+				if (gameOver == false) {
+				Time.timeScale = 0;
+				pausePanel.SetActive(true);
+				}
+			} else {
+				CloseOptionPanel();
 			}
 		}
+		
 		if (Input.GetKeyDown(KeyCode.R) && restart == true) {
 			RestartCurrentScene();
 		}
 	}
-
+	
 	public void CloseOptionPanel() {
 		pausePanel.SetActive(false);
 		Time.timeScale = 1;
+	}
+	
+	public void AdjustVolume(float volumeValue) {
+		AudioListener.volume = volumeValue;
 	}
 	
 	public void QuitGame() {
@@ -69,10 +104,10 @@ public class GameController : MonoBehaviour {
 				yield return new WaitForSeconds(spawnWait);
 			}
 			yield return new WaitForSeconds(timeForNextWave);
-			hazardCount += 5;
+			/*hazardCount += 5;
 			if (Time.time > 20f) {
 				spawnWait = 0.3f;
-			}
+			}*/
 			if (gameOver) {
 				retryText.enabled = true;
 				restart = true;

@@ -55,6 +55,7 @@
      <Compile Include="Assets\Scripts\ObjectRotator.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\WeaponController.cs" />
+     <None Include="Assets\Fonts\supercommando.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

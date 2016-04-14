@@ -17,6 +17,8 @@ public class GameController : MonoBehaviour {
 	public Text scoreText;
 	public Text GameOverText;
 	public Text retryText;
+	public Text fireRateUpgradableText;
+	private string[] fireRateUpgradableCostText;
 	
 	private bool gameOver;
 	private bool restart;
@@ -25,20 +27,45 @@ public class GameController : MonoBehaviour {
 	public GameObject pausePanel;
 	public GameObject volumeSlider;
 	
+	public Button fireRateUpgradeButton;
+	
+	private PlayerController playerController;
+	private int count = 0;
+	
 	// Use this for initialization
 	void Start () {
 		Slider slider = volumeSlider.GetComponent<Slider>();
+		
+		GameObject playerControllerObject = GameObject.FindWithTag("Player");
+		if (playerControllerObject != null) {
+			playerController = playerControllerObject.GetComponent<PlayerController>();
+		} else {
+			Debug.Log("ERROR: PLAYER CONTROLLER NOT FOUND.");
+		}
 		
 		gamePaused = false;
 		gameOver = false;
 		restart = false;
 		GameOverText.enabled = false;
 		retryText.enabled = false;
+		fireRateUpgradableText.text = "1000";
+		fireRateUpgradableCostText = new string[] {"1000", "2500", "5000", "10000", "Max fire Rate"};
 		score = 0;
 		
 		slider.value = AudioListener.volume;
 		
 		StartCoroutine (SpawnWaves());
+	}
+	
+	public void PurchaseFireRateUpgrade() {
+		if (score > int.Parse(fireRateUpgradableCostText[count])) {
+			playerController.IncreaseFireRate();
+			score = score - int.Parse(fireRateUpgradableCostText[count]);
+			fireRateUpgradableText.text = fireRateUpgradableCostText[++count];
+			if (playerController.fireRate < 0.06) {
+				fireRateUpgradeButton.interactable = false;
+			}
+		}
 	}
 	
 	//Used by the playerController to see if the game is paused or not to whether allow the game to 
@@ -51,7 +78,18 @@ public class GameController : MonoBehaviour {
 		}
 	}
 	
+	void updateFireRateUpgradeText() {
+		if (score > int.Parse(fireRateUpgradableCostText[count])) {
+			fireRateUpgradableText.color = Color.white;
+		} else {
+			fireRateUpgradableText.color = Color.red;
+		}
+	}
+	
+	
+	
 	void Update() {
+		updateFireRateUpgradeText();
 		//As soon as timeScale is set to zero FixedUpdate will not execute.
 		if (Time.timeScale == 0) {
 			gamePaused = true;

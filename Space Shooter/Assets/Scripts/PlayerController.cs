@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour {
 	public GameObject projectile;
 	public Transform projectileSpawn;
 	public float fireRate;
+	private float fixedFireRateIncrease = 0.05f;
 	private float nextFire;
 	
 	private AudioSource au;
@@ -32,6 +33,13 @@ public class PlayerController : MonoBehaviour {
 			Debug.Log("ERROR: GAME CONTROLLER NOT FOUND.");
 		}
 	}
+	
+	public void IncreaseFireRate() {
+		if (fireRate > 0.06) {
+			fireRate -= fixedFireRateIncrease;
+		};
+	}
+
 	
 	//Update called right before every frame within the game is loaded.
 	void Update() {

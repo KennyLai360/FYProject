@@ -61,21 +61,24 @@ public class GameController : MonoBehaviour {
 		
 		//Gives an option to the palyer to close the Pause menu by pressing the same ESC key.		
 		if (Input.GetKeyDown(KeyCode.Escape)) {
-			if (pausePanel.activeSelf == false) {	
-				if (gameOver == false) {
+				if (gameOver == false && pausePanel.activeSelf == false) {
 				Time.timeScale = 0;
 				pausePanel.SetActive(true);
-				}
+				} else if (Input.GetKeyDown(KeyCode.Escape) && restart == true){
+				SceneManager.LoadScene(0);
 			} else {
 				CloseOptionPanel();
 			}
 		}
 		
 		if (Input.GetKeyDown(KeyCode.R) && restart == true) {
-			RestartCurrentScene();
+			SceneManager.LoadScene(1);
 		}
 	}
 	
+	/*
+	* Method called when the close Options panel is pressed.
+	*/
 	public void CloseOptionPanel() {
 		pausePanel.SetActive(false);
 		Time.timeScale = 1;
@@ -88,6 +91,11 @@ public class GameController : MonoBehaviour {
 	public void QuitGame() {
 		Debug.Log("Game terminated.");
 		Application.Quit();
+	}
+	
+	public void ReturnToMainMenu() {
+		Time.timeScale = 1;
+		SceneManager.LoadScene(0);
 	}
 
 	

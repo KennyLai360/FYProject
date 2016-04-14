@@ -51,6 +51,7 @@
      <Compile Include="Assets\Scripts\DestroyByTime.cs" />
      <Compile Include="Assets\Scripts\EnemyEvasiveManeuver.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
+     <Compile Include="Assets\Scripts\MenuController.cs" />
      <Compile Include="Assets\Scripts\Mover.cs" />
      <Compile Include="Assets\Scripts\ObjectRotator.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />

@@ -18,7 +18,8 @@ public class GameController : MonoBehaviour {
 	public Text GameOverText;
 	public Text retryText;
 	public Text fireRateUpgradableText;
-	private string[] fireRateUpgradableCostText;
+	private int[] fireRateUpgradableCostArray;
+	private Text fireRateButtonText;
 	
 	private bool gameOver;
 	private bool restart;
@@ -49,21 +50,29 @@ public class GameController : MonoBehaviour {
 		GameOverText.enabled = false;
 		retryText.enabled = false;
 		fireRateUpgradableText.text = "1000";
-		fireRateUpgradableCostText = new string[] {"1000", "2500", "5000", "10000", "Max fire Rate"};
-		score = 0;
+		fireRateUpgradableCostArray = new int[] {1000, 2500, 5000, 10000, 0};
+		fireRateButtonText = fireRateUpgradeButton.GetComponentInChildren<Text>();
 		
+		score = 0;
 		slider.value = AudioListener.volume;
 		
 		StartCoroutine (SpawnWaves());
 	}
 	
+	/*
+	*Press of the upgrade fire rate button, this should increase it and deduct the amount from
+	the score. Else if max fire rate is reached then 
+	*/
 	public void PurchaseFireRateUpgrade() {
-		if (score > int.Parse(fireRateUpgradableCostText[count])) {
+		if (score > fireRateUpgradableCostArray[count]) {
 			playerController.IncreaseFireRate();
-			score = score - int.Parse(fireRateUpgradableCostText[count]);
-			fireRateUpgradableText.text = fireRateUpgradableCostText[++count];
+			score = score - fireRateUpgradableCostArray[count];
+			fireRateUpgradableText.text = fireRateUpgradableCostArray[++count].ToString();
+			UpdateScore();
 			if (playerController.fireRate < 0.06) {
 				fireRateUpgradeButton.interactable = false;
+				fireRateButtonText.text = "Max fire rate";
+				
 			}
 		}
 	}
@@ -78,18 +87,28 @@ public class GameController : MonoBehaviour {
 		}
 	}
 	
+	/*
+	*This method has been included in the Update method because we want it to be 
+	updated immediately as soon as the user Ugrades something, either the cost text
+	should change red or stay red depending on if the player has enough score to spend on it.
+	*/
 	void updateFireRateUpgradeText() {
-		if (score > int.Parse(fireRateUpgradableCostText[count])) {
-			fireRateUpgradableText.color = Color.white;
-		} else {
-			fireRateUpgradableText.color = Color.red;
-		}
+			if (score > fireRateUpgradableCostArray[count]) {
+				fireRateUpgradableText.color = Color.white;
+				fireRateUpgradeButton.interactable = true;
+			} else {
+				fireRateUpgradeButton.interactable = false;
+				fireRateUpgradableText.color = Color.red;
+			}
 	}
 	
 	
 	
 	void Update() {
-		updateFireRateUpgradeText();
+		//Don't call the method anymore after it has reached the max fire rate.
+		if (fireRateUpgradableCostArray[count] != 0) {
+			updateFireRateUpgradeText();
+		}
 		//As soon as timeScale is set to zero FixedUpdate will not execute.
 		if (Time.timeScale == 0) {
 			gamePaused = true;

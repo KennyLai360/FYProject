@@ -17,15 +17,21 @@ public class PlayerController : MonoBehaviour {
 	public float playerTilt;
 	
 	public GameObject projectile;
-	public Transform projectileSpawn;
+	public Transform[] projectileSpawns;
 	public float fireRate;
 	private float fixedFireRateIncrease = 0.05f;
 	private float nextFire;
+	public int projectileLevel;
+	private int[] projectileLevels;
 	
 	private AudioSource au;
 	private GameController gameController;
 	
 	void Start() {
+		
+		projectileLevel = 1;
+		projectileLevels = new int[] {0, 1, 3};
+		
 		GameObject gameControllerObject = GameObject.FindWithTag("GameController");
 		if (gameControllerObject != null) {
 			gameController = gameControllerObject.GetComponent<GameController>();
@@ -35,9 +41,11 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	public void IncreaseFireRate() {
-		if (fireRate > 0.06) {
-			fireRate -= fixedFireRateIncrease;
-		};
+		fireRate -= fixedFireRateIncrease;
+	}
+	
+	public void IncreaseProjectileLevel() {
+		projectileLevel++;
 	}
 
 	
@@ -48,7 +56,9 @@ public class PlayerController : MonoBehaviour {
 				au = GetComponent<AudioSource>();
 				nextFire = Time.time + fireRate;
 				//Creates an object of the projectile, with the position and rotation of the projectileSpawn.
-				Instantiate(projectile, projectileSpawn.position, projectileSpawn.rotation);
+				for (int i = 0; i < projectileLevels[projectileLevel]; i++) {
+				Instantiate(projectile, projectileSpawns[i].position, projectileSpawns[i].rotation);
+				};
 				au.Play();
 			}
 		}

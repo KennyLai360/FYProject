@@ -15,23 +15,30 @@ public class GameController : MonoBehaviour {
 	
 	private int score;
 	public Text scoreText;
+	public Text highScoreText;
 	public Text GameOverText;
 	public Text retryText;
 	public Text fireRateUpgradableText;
+	public Text projectileUpgradableText;
 	private int[] fireRateUpgradableCostArray;
+	private int[] projectileUpgradableCostArray;
 	private Text fireRateButtonText;
+	private Text projectileButtonText;
 	
 	private bool gameOver;
 	private bool restart;
 	private bool gamePaused;
+
 	
 	public GameObject pausePanel;
 	public GameObject volumeSlider;
 	
 	public Button fireRateUpgradeButton;
+	public Button projectileUpgradeButton;
 	
 	private PlayerController playerController;
-	private int count = 0;
+	private int fireRateCount = 0;
+	private int projectileCount = 0;
 	
 	// Use this for initialization
 	void Start () {
@@ -50,10 +57,14 @@ public class GameController : MonoBehaviour {
 		GameOverText.enabled = false;
 		retryText.enabled = false;
 		fireRateUpgradableText.text = "1000";
+		projectileUpgradableText.text = "5000";
 		fireRateUpgradableCostArray = new int[] {1000, 2500, 5000, 10000, 0};
+		projectileUpgradableCostArray = new int[] {5000, 0};
 		fireRateButtonText = fireRateUpgradeButton.GetComponentInChildren<Text>();
+		projectileButtonText = projectileUpgradeButton.GetComponentInChildren<Text>();
 		
 		score = 0;
+		highScoreText.text = ("High score: " + PlayerPrefs.GetInt("highscore", 0).ToString());
 		slider.value = AudioListener.volume;
 		
 		StartCoroutine (SpawnWaves());
@@ -64,16 +75,52 @@ public class GameController : MonoBehaviour {
 	the score. Else if max fire rate is reached then 
 	*/
 	public void PurchaseFireRateUpgrade() {
-		if (score > fireRateUpgradableCostArray[count]) {
+		if (score >= fireRateUpgradableCostArray[fireRateCount]) {
 			playerController.IncreaseFireRate();
-			score = score - fireRateUpgradableCostArray[count];
-			fireRateUpgradableText.text = fireRateUpgradableCostArray[++count].ToString();
+			score = score - fireRateUpgradableCostArray[fireRateCount];
+			fireRateCount++;
+			if (fireRateUpgradableCostArray[fireRateCount] != 0) {
+				fireRateUpgradableText.text = fireRateUpgradableCostArray[fireRateCount].ToString();
+			} else {
+				fireRateUpgradableText.text = "";
+			}
 			UpdateScore();
+			
 			if (playerController.fireRate < 0.06) {
 				fireRateUpgradeButton.interactable = false;
 				fireRateButtonText.text = "Max fire rate";
-				
 			}
+			
+		}
+	}
+	
+	public bool isGameOver() {
+		return gameOver;
+	}
+	
+	void StoreHighscore(int newHighscore) {
+		int oldHighscore = PlayerPrefs.GetInt("highscore", 0); 	 
+		if(newHighscore > oldHighscore)
+        PlayerPrefs.SetInt("highscore", newHighscore);
+	}
+	
+	public void PurchaseIncreaseProjectileUpgrade() {
+		if (score >= projectileUpgradableCostArray[projectileCount]) {
+			playerController.IncreaseProjectileLevel();
+			score = score - projectileUpgradableCostArray[projectileCount];
+			projectileCount++;
+			if (projectileUpgradableCostArray[projectileCount] != 0) {
+				projectileUpgradableText.text = projectileUpgradableCostArray[projectileCount].ToString();
+			} else {
+				projectileUpgradableText.text = "";
+			}
+			UpdateScore();
+			
+			if (playerController.projectileLevel == 2) {
+				projectileUpgradeButton.interactable = false;
+				projectileButtonText.text = "Max projectiles";
+			}
+			
 		}
 	}
 	
@@ -92,23 +139,34 @@ public class GameController : MonoBehaviour {
 	updated immediately as soon as the user Ugrades something, either the cost text
 	should change red or stay red depending on if the player has enough score to spend on it.
 	*/
-	void updateFireRateUpgradeText() {
-			if (score > fireRateUpgradableCostArray[count]) {
+	void updateUpgradeText() {
+		if (fireRateUpgradableCostArray[fireRateCount] != 0) {
+			if (score >= fireRateUpgradableCostArray[fireRateCount]) {
 				fireRateUpgradableText.color = Color.white;
 				fireRateUpgradeButton.interactable = true;
 			} else {
 				fireRateUpgradeButton.interactable = false;
 				fireRateUpgradableText.color = Color.red;
 			}
+		}
+		
+		if (projectileUpgradableCostArray[projectileCount] != 0) {
+			if (score >= projectileUpgradableCostArray[projectileCount]) {
+				projectileUpgradableText.color = Color.white;
+				projectileUpgradeButton.interactable = true;
+			} else {
+				projectileUpgradeButton.interactable = false;
+				projectileUpgradableText.color = Color.red;
+			}
+		}
+			
+			
 	}
 	
 	
 	
-	void Update() {
-		//Don't call the method anymore after it has reached the max fire rate.
-		if (fireRateUpgradableCostArray[count] != 0) {
-			updateFireRateUpgradeText();
-		}
+	void Update() {	
+			updateUpgradeText();
 		//As soon as timeScale is set to zero FixedUpdate will not execute.
 		if (Time.timeScale == 0) {
 			gamePaused = true;
@@ -141,6 +199,9 @@ public class GameController : MonoBehaviour {
 		Time.timeScale = 1;
 	}
 	
+	/*
+	* In game menu to adjust the master volume.
+	*/
 	public void AdjustVolume(float volumeValue) {
 		AudioListener.volume = volumeValue;
 	}
@@ -169,10 +230,7 @@ public class GameController : MonoBehaviour {
 				yield return new WaitForSeconds(spawnWait);
 			}
 			yield return new WaitForSeconds(timeForNextWave);
-			/*hazardCount += 5;
-			if (Time.time > 20f) {
-				spawnWait = 0.3f;
-			}*/
+			
 			if (gameOver) {
 				retryText.enabled = true;
 				restart = true;
@@ -195,12 +253,6 @@ public class GameController : MonoBehaviour {
 	public void GameOver() {
 		gameOver = true;
 		GameOverText.enabled = true;
+		StoreHighscore(score);
 	}
-	
-	void RestartCurrentScene() {
-		SceneManager.LoadScene(0);
-	}
-	
-	
-	
 }

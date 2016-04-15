@@ -15,7 +15,13 @@ public class Mover : MonoBehaviour {
 			rb = GetComponent<Rigidbody>();
 			
 			Vector3 movement = new Vector3(1.0f, 0.0f,0.0f);
-			rb.velocity = movement * speed;
+			if (gameObject.tag == "PlayerBolt") {
+				rb.velocity = transform.forward * speed;
+				//Prevents the projectile object from going out of the boundary in the Y AXIS.
+				rb.velocity = new Vector3(rb.velocity.x, 0.0f, rb.velocity.z);
+			} else {
+				rb.velocity = movement * speed;
+			}
 	}
 	
 }

@@ -22,7 +22,7 @@ public class DestroyByContact : MonoBehaviour {
 		
 		if (other.tag == "Boundary" || other.tag == "Enemy") {
 			return;
-		};	
+		};
 			
 		//If the contact is with the object with the Player tag, then it will instantiate a playerExplosion
 		//at the same spot where the collision happened.
@@ -43,7 +43,9 @@ public class DestroyByContact : MonoBehaviour {
 			Destroy(gameObject);
 		}
 		
+		if (gameController.isGameOver() == false) {
 		gameController.AddScore(scoreValue);
+		}
 		
 	}
 }

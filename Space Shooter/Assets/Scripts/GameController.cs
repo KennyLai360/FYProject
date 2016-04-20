@@ -41,9 +41,15 @@ public class GameController : MonoBehaviour {
 	private PlayerController playerController;
 	private int fireRateCount = 0;
 	private int projectileCount = 0;
+
+	public AudioClip inGameMusic;
+	public AudioClip menuMusic;
 	
 	// Use this for initialization
 	void Start () {
+		SingletonController.Instance.LoadMusic(inGameMusic);
+		SingletonController.Instance.PlayMusic();
+		
 		Slider slider = volumeSlider.GetComponent<Slider>();
 		
 		GameObject playerControllerObject = GameObject.FindWithTag("Player");
@@ -180,10 +186,14 @@ public class GameController : MonoBehaviour {
 				Time.timeScale = 0;
 				pausePanel.SetActive(true);
 				} else if (Input.GetKeyDown(KeyCode.Escape) && restart == true){
-				SceneManager.LoadScene(0);
+				ReturnToMainMenu();
 			} else {
 				CloseOptionPanel();
 			}
+		}
+		
+		if (Input.GetKeyDown(KeyCode.P)) {
+			Application.CaptureScreenshot("Screenshot123.png");
 		}
 		
 		if (Input.GetKeyDown(KeyCode.R) && restart == true) {
@@ -212,6 +222,9 @@ public class GameController : MonoBehaviour {
 	}
 	
 	public void ReturnToMainMenu() {
+		//SingletonController.Instance.StopMusic();
+		SingletonController.Instance.LoadMusic(menuMusic);
+		SingletonController.Instance.PlayMusic();
 		Time.timeScale = 1;
 		SceneManager.LoadScene(0);
 	}

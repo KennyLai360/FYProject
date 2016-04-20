@@ -49,13 +49,13 @@
      <Compile Include="Assets\Scripts\DestroyByBoundary.cs" />
      <Compile Include="Assets\Scripts\DestroyByContact.cs" />
      <Compile Include="Assets\Scripts\DestroyByTime.cs" />
-     <Compile Include="Assets\Scripts\DontDestroyObject.cs" />
      <Compile Include="Assets\Scripts\EnemyEvasiveManeuver.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\MenuController.cs" />
      <Compile Include="Assets\Scripts\Mover.cs" />
      <Compile Include="Assets\Scripts\ObjectRotator.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
+     <Compile Include="Assets\Scripts\SingletonController.cs" />
      <Compile Include="Assets\Scripts\WeaponController.cs" />
      <None Include="Assets\Fonts\supercommando.txt" />
  <Reference Include="UnityEngine.UI">

@@ -20,6 +20,7 @@ public class GameController : MonoBehaviour {
 	public Text retryText;
 	public Text fireRateUpgradableText;
 	public Text projectileUpgradableText;
+	public Text actionText;
 	private int[] fireRateUpgradableCostArray;
 	private int[] projectileUpgradableCostArray;
 	private Text fireRateButtonText;
@@ -31,6 +32,7 @@ public class GameController : MonoBehaviour {
 
 	
 	public GameObject pausePanel;
+	public GameObject confirmDialog;
 	public GameObject volumeSlider;
 	
 	public Button fireRateUpgradeButton;
@@ -163,8 +165,6 @@ public class GameController : MonoBehaviour {
 			
 	}
 	
-	
-	
 	void Update() {	
 			updateUpgradeText();
 		//As soon as timeScale is set to zero FixedUpdate will not execute.
@@ -214,6 +214,34 @@ public class GameController : MonoBehaviour {
 	public void ReturnToMainMenu() {
 		Time.timeScale = 1;
 		SceneManager.LoadScene(0);
+	}
+	
+	private int actionTaken;
+	
+	public void ShowDialog(int value) {
+		if (value == 0) {
+			actionText.text = "Exit application? You will lose your current game progress!";
+			actionTaken = 0;
+		} else if (value == 1) {
+			actionText.text = "Return to main menu? You will lose your current game progress!";
+			actionTaken = 1;
+		} else {
+			actionText.text = "";
+		}
+		
+		confirmDialog.SetActive(true);
+	}
+	
+	public void CloseDialog() {
+		confirmDialog.SetActive(false);
+	}
+	
+	public void YesDialogButtonPressed() {
+		if (actionTaken == 0) {
+			QuitGame();
+		} else if (actionTaken == 1) {
+			ReturnToMainMenu();
+		}
 	}
 
 	

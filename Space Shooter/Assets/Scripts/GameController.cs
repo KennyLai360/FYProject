@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour {
 	public float beginningEnemySpawnWait;
 	public float spawnWait;
 	public float timeForNextWave;
+	private int enemyShowing;
 	
 	private int score;
 	public Text scoreText;
@@ -44,21 +45,28 @@ public class GameController : MonoBehaviour {
 
 	public AudioClip inGameMusic;
 	public AudioClip menuMusic;
+	public AudioClip gameOverMusic;
+	public AudioSource au;
+	
+	private int wave;
 	
 	// Use this for initialization
 	void Start () {
-		SingletonController.Instance.LoadMusic(inGameMusic);
-		SingletonController.Instance.PlayMusic();
+		SingletonController.Instance.SetLoopProperty(true);
+		SingletonController.Instance.ChangeAndPlayMusic(inGameMusic);
 		
 		Slider slider = volumeSlider.GetComponent<Slider>();
+		au = GetComponent<AudioSource>();
 		
+		//In charge of adjusting the player's stats through using public methods from the player controller.
 		GameObject playerControllerObject = GameObject.FindWithTag("Player");
 		if (playerControllerObject != null) {
 			playerController = playerControllerObject.GetComponent<PlayerController>();
 		} else {
 			Debug.Log("ERROR: PLAYER CONTROLLER NOT FOUND.");
 		}
-		
+		wave = 1;
+		enemyShowing = 3;
 		gamePaused = false;
 		gameOver = false;
 		restart = false;
@@ -71,10 +79,11 @@ public class GameController : MonoBehaviour {
 		fireRateButtonText = fireRateUpgradeButton.GetComponentInChildren<Text>();
 		projectileButtonText = projectileUpgradeButton.GetComponentInChildren<Text>();
 		
+		InvokeRepeating("LoopStage", 0, 5);
+		
 		score = 0;
 		highScoreText.text = ("High score: " + PlayerPrefs.GetInt("highscore", 0).ToString());
 		slider.value = AudioListener.volume;
-		
 		StartCoroutine (SpawnWaves());
 	}
 	
@@ -94,7 +103,7 @@ public class GameController : MonoBehaviour {
 			}
 			UpdateScore();
 			
-			if (playerController.fireRate < 0.06) {
+			if (fireRateUpgradableCostArray[fireRateCount] == 0) {
 				fireRateUpgradeButton.interactable = false;
 				fireRateButtonText.text = "Max fire rate";
 			}
@@ -166,10 +175,51 @@ public class GameController : MonoBehaviour {
 				projectileUpgradeButton.interactable = false;
 				projectileUpgradableText.color = Color.red;
 			}
-		}
-			
-			
+		}	
 	}
+	
+	/*
+	* 	hc - Amount of hazards spawns per wave.
+		sw - the time to wait before spawning the next enemy.
+		es - The set of enemies to be spawn. default only 3 or 4 (3 = asteroids only, 4 = asteroids with enemy spaceships.)
+	*/
+	void setDifficulty(int hc, float sw, int es) {
+		hazardCount = hc;
+		spawnWait = sw;
+		enemyShowing = es;
+	}
+	
+	void setStage(int stage) {
+		switch (stage)
+         {
+            case 1:
+				setDifficulty(10, 0.75f, 3);
+				break;
+            case 2:
+				setDifficulty(15, 0.5f, 3);
+				break;
+            case 3:
+				setDifficulty(15, 0.5f, 4);
+               break;
+            case 4:
+				setDifficulty(15, 0.35f, 4);
+               break;
+            case 5:
+				setDifficulty(20, 0.25f, 4);
+               break;
+			case 6:
+				setDifficulty(25, 0.25f, 4);
+               break;
+			case 7:
+				setDifficulty(30, 0.25f, 4);
+               break;
+         }
+	}
+	
+	void LoopStage() {
+		setStage(Random.Range(0, 7));
+	}
+	
 	
 	void Update() {	
 			updateUpgradeText();
@@ -180,7 +230,7 @@ public class GameController : MonoBehaviour {
 			gamePaused = false;
 		}
 		
-		//Gives an option to the palyer to close the Pause menu by pressing the same ESC key.		
+		//Gives an option to the player to close the Pause menu by pressing the same ESC key.		
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 				if (gameOver == false && pausePanel.activeSelf == false) {
 				Time.timeScale = 0;
@@ -192,19 +242,21 @@ public class GameController : MonoBehaviour {
 			}
 		}
 		
-		if (Input.GetKeyDown(KeyCode.P)) {
-			Application.CaptureScreenshot("Screenshot123.png");
-		}
-		
 		if (Input.GetKeyDown(KeyCode.R) && restart == true) {
 			SceneManager.LoadScene(1);
 		}
+		
+		if (Input.GetKeyDown(KeyCode.B)) {
+			Debug.Log(wave);
+		}
 	}
+	
 	
 	/*
 	* Method called when the close Options panel is pressed.
 	*/
 	public void CloseOptionPanel() {
+		PlayerPrefs.SetFloat("masterVolume", AudioListener.volume);
 		pausePanel.SetActive(false);
 		Time.timeScale = 1;
 	}
@@ -217,14 +269,14 @@ public class GameController : MonoBehaviour {
 	}
 	
 	public void QuitGame() {
+		PlayerPrefs.SetFloat("masterVolume", AudioListener.volume);
 		Debug.Log("Game terminated.");
 		Application.Quit();
 	}
 	
 	public void ReturnToMainMenu() {
-		//SingletonController.Instance.StopMusic();
-		SingletonController.Instance.LoadMusic(menuMusic);
-		SingletonController.Instance.PlayMusic();
+		PlayerPrefs.SetFloat("masterVolume", AudioListener.volume);
+		SingletonController.Instance.ChangeAndPlayMusic(menuMusic);
 		Time.timeScale = 1;
 		SceneManager.LoadScene(0);
 	}
@@ -257,20 +309,20 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	
 	IEnumerator SpawnWaves() {
 		//Wait for X amount of seconds before spawning the enemy wave so the player can prepare.
 		yield return new WaitForSeconds(beginningEnemySpawnWait);
 		
 		while (true) {
 			for (int i = 0; i < hazardCount; i++) {
-				GameObject hazard = hazards[(Random.Range(0, hazards.Length))];
+				GameObject hazard = hazards[(Random.Range(0, enemyShowing))];
 				Vector3 spawnPosition = new Vector3(spawnPositionValues.x, 0.0f, Random.Range(-spawnPositionValues.z, spawnPositionValues.z));
 				Quaternion spawnRotation = Quaternion.identity;
 				Instantiate(hazard, spawnPosition, spawnRotation);
 				yield return new WaitForSeconds(spawnWait);
 			}
 			yield return new WaitForSeconds(timeForNextWave);
+			wave++;
 			
 			if (gameOver) {
 				retryText.enabled = true;
@@ -294,6 +346,8 @@ public class GameController : MonoBehaviour {
 	public void GameOver() {
 		gameOver = true;
 		GameOverText.enabled = true;
+		SingletonController.Instance.SetLoopProperty(false);
+		SingletonController.Instance.ChangeAndPlayMusic(gameOverMusic);
 		StoreHighscore(score);
 	}
 }

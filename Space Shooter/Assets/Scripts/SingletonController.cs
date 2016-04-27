@@ -25,7 +25,7 @@ using System.Collections;
 		   //For generic and ease of remove the high score. J+K key together.
 		   if (Input.GetKey(KeyCode.J) && Input.GetKeyDown(KeyCode.K)) {
 			   PlayerPrefs.DeleteAll();
-			   Debug.Log("High scores deleted");
+			   Debug.Log("Player Prefs Data Deleted!");
 			   }
 	   }
 	   
@@ -41,8 +41,13 @@ using System.Collections;
 		   au.Play();
 	   }
 	   
-	   public void LoadMusic(AudioClip newMusic) {
+	   public void ChangeAndPlayMusic(AudioClip newMusic) {
 		   au.clip = newMusic;
+		   PlayMusic();
+	   }
+	   
+	   public void SetLoopProperty(bool value) {
+			au.loop = value;
 	   }
 	   
  }

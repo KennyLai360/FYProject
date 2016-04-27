@@ -12,27 +12,28 @@ public class MenuController : MonoBehaviour {
 	public Text loadingText;
 	
 	void Start() {
+		SingletonController.Instance.SetLoopProperty(true);
+		if (PlayerPrefs.HasKey("masterVolume")) {
+			AudioListener.volume = PlayerPrefs.GetFloat("masterVolume");
+		}
 		Slider slider = volumeSlider.GetComponent<Slider>();
 		slider.value = AudioListener.volume;
 	}
 	
 	public void StartButtonPress() {
-		Debug.Log("START");
 		instructionModal1.SetActive(true);
 	}
 	
 	public void OpenOptionsModal() {
-		Debug.Log("Opening Options Modal.");
 		optionsModal.SetActive(true);
 	}
 	
 	public void CloseOptionsModal() {
-		Debug.Log("Closing Options Modal.");
 		optionsModal.SetActive(false);
+		PlayerPrefs.SetFloat("masterVolume", AudioListener.volume);
 	}
 	
 	public void ExitGame() {
-		Debug.Log("Game Terminated.");
 		Application.Quit();
 	}
 	

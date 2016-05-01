@@ -26,6 +26,8 @@ public class GameController : MonoBehaviour {
 	private int[] projectileUpgradableCostArray;
 	private Text fireRateButtonText;
 	private Text projectileButtonText;
+	private int lifesRemaining;
+	public Text lifesRemainingText;
 	
 	private bool gameOver;
 	private bool restart;
@@ -111,16 +113,6 @@ public class GameController : MonoBehaviour {
 		}
 	}
 	
-	public bool isGameOver() {
-		return gameOver;
-	}
-	
-	void StoreHighscore(int newHighscore) {
-		int oldHighscore = PlayerPrefs.GetInt("highscore", 0); 	 
-		if(newHighscore > oldHighscore)
-        PlayerPrefs.SetInt("highscore", newHighscore);
-	}
-	
 	public void PurchaseIncreaseProjectileUpgrade() {
 		if (score >= projectileUpgradableCostArray[projectileCount]) {
 			playerController.IncreaseProjectileLevel();
@@ -139,6 +131,16 @@ public class GameController : MonoBehaviour {
 			}
 			
 		}
+	}
+	
+	public bool isGameOver() {
+		return gameOver;
+	}
+	
+	void StoreHighscore(int newHighscore) {
+		int oldHighscore = PlayerPrefs.GetInt("highscore", 0); 	 
+		if(newHighscore > oldHighscore)
+        PlayerPrefs.SetInt("highscore", newHighscore);
 	}
 	
 	//Used by the playerController to see if the game is paused or not to whether allow the game to 
@@ -217,12 +219,14 @@ public class GameController : MonoBehaviour {
 	}
 	
 	void LoopStage() {
-		setStage(Random.Range(0, 7));
+		setStage(Random.Range(1, 7));
 	}
 	
 	
 	void Update() {	
 			updateUpgradeText();
+			lifesRemaining = playerController.LifesRemaining();
+			lifesRemainingText.text = "Lifes: " + lifesRemaining.ToString();
 		//As soon as timeScale is set to zero FixedUpdate will not execute.
 		if (Time.timeScale == 0) {
 			gamePaused = true;
@@ -244,10 +248,6 @@ public class GameController : MonoBehaviour {
 		
 		if (Input.GetKeyDown(KeyCode.R) && restart == true) {
 			SceneManager.LoadScene(1);
-		}
-		
-		if (Input.GetKeyDown(KeyCode.B)) {
-			Debug.Log(wave);
 		}
 	}
 	

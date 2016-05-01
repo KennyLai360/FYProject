@@ -19,7 +19,6 @@ public class EnemyEvasiveManeuver : MonoBehaviour
     void Start ()
     {
         rb = GetComponent <Rigidbody>();
-        //currentSpeed = rb.velocity.x;
         StartCoroutine (Evade ());
     }
 
@@ -39,7 +38,8 @@ public class EnemyEvasiveManeuver : MonoBehaviour
     void FixedUpdate ()
     {
         float newManeuver = Mathf.MoveTowards (rb.velocity.z, targetManeuver, Time.deltaTime * smoothing);
-        rb.velocity = new Vector3 (-5f, 0.0f, newManeuver);
+        rb.velocity = new Vector3 (Random.Range (-5f, -1f), 0.0f, newManeuver);
+		//Clip the enemy's movement within the screen.
         rb.position = new Vector3 
         (
             Mathf.Clamp (rb.position.x, boundary.xMin, boundary.xMax),
@@ -47,6 +47,7 @@ public class EnemyEvasiveManeuver : MonoBehaviour
             Mathf.Clamp (rb.position.z, boundary.zMin, boundary.zMax)
         );
 
+		//Make the enemy model tilt when moving.
         rb.rotation = Quaternion.Euler(rb.velocity.z * tilt, 0.0f, 0.0f);
     }
 }

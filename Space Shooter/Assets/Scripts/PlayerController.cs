@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour {
 	private Rigidbody rb;
 	public float movementFactor;
 	public float playerTilt;
+	private int lifes;
 	
 	public GameObject projectile;
 	public Transform[] projectileSpawns;
@@ -23,12 +24,14 @@ public class PlayerController : MonoBehaviour {
 	private float nextFire;
 	public int projectileLevel;
 	private int[] projectileLevels;
+	private bool invul;
 	
 	private AudioSource au;
 	private GameController gameController;
 	
 	void Start() {
-		
+		invul = false;
+		lifes = 3;
 		projectileLevel = 1;
 		projectileLevels = new int[] {0, 1, 3};
 		
@@ -38,6 +41,8 @@ public class PlayerController : MonoBehaviour {
 		} else {
 			Debug.Log("ERROR: GAME CONTROLLER NOT FOUND.");
 		}
+		
+		rb = GetComponent<Rigidbody>();
 	}
 	
 	public void IncreaseFireRate() {
@@ -46,6 +51,32 @@ public class PlayerController : MonoBehaviour {
 	
 	public void IncreaseProjectileLevel() {
 		projectileLevel++;
+	}
+	
+	public void DecreaseLife() {
+		lifes--;
+	}
+	
+	public int LifesRemaining() {
+		return lifes;
+	}
+	
+	public Vector3 PlayerCurrentPosition() {
+		return rb.position;
+	}
+	
+	public bool IsInvul() {
+		return invul;
+	}
+	
+	public void SetInvul() {
+		StartCoroutine(setInvulnerable());
+	}
+	
+	IEnumerator setInvulnerable() {
+		invul = true;
+		yield return new WaitForSeconds(1.5f);
+		invul = false;
 	}
 
 	
@@ -69,8 +100,6 @@ public class PlayerController : MonoBehaviour {
 		//Grab the keyboard inputs to move horizontal and vertical.
 		float moveHorizontal = Input.GetAxis("Horizontal");
 		float moveVertical = Input.GetAxis("Vertical");
-		
-		rb = GetComponent<Rigidbody>();
 		
 		//Apply the movement values(0 - 1) and apply some velocity to the rigit body.
 		Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
